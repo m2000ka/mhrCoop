@@ -3,376 +3,847 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ค้นหาข้อมูลที่อยู่ - กระทรวงสาธารณสุข</title>
+    <title>ค้นหาข้อมูลที่อยู่ - MOPH API (JWT Auth)</title>
     
     <!-- Google Fonts ภาษาไทย -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Sarabun', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-gradient);
             min-height: 100vh;
             padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
         }
 
         .container {
             background: white;
             border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: var(--card-shadow);
             padding: 30px;
-            max-width: 600px;
+            max-width: 700px;
             width: 100%;
+            margin: 20px 0;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
         }
 
         h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 1.5rem;
+            color: #1e293b;
+            font-size: 1.4rem;
+            margin-bottom: 5px;
         }
 
         .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 25px;
+            color: #64748b;
             font-size: 0.9rem;
         }
 
+        .badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 8px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-section-title {
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 600;
-            color: #444;
+            font-weight: 500;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        label .required {
+            color: var(--danger);
+            margin-left: 3px;
         }
 
         input, select {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
+            padding: 12px 15px;
+            border: 2px solid #cbd5e1;
             border-radius: 8px;
             font-size: 1rem;
             font-family: 'Sarabun', sans-serif;
-            transition: border-color 0.3s;
+            transition: all 0.2s;
+            background: white;
         }
 
         input:focus, select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        input[type="password"] {
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        .input-hint {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 5px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
         }
 
         .btn {
-            width: 100%;
+            flex: 1;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
             border: none;
             border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.2s;
             font-family: 'Sarabun', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .btn:hover {
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: #e2e8f0;
         }
 
         .btn:disabled {
-            background: #ccc;
+            background: #cbd5e1;
+            color: #64748b;
             cursor: not-allowed;
             transform: none;
         }
 
+        .status-area {
+            margin: 20px 0;
+        }
+
         .loading {
+            display: none;
             text-align: center;
             padding: 20px;
-            color: #666;
-            display: none;
-        }
-
-        .loading.show { display: block; }
-
-        .result {
-            margin-top: 25px;
-            padding: 20px;
-            background: #f8f9fa;
+            color: #64748b;
+            background: #f8fafc;
             border-radius: 8px;
-            border-left: 4px solid #667eea;
+        }
+
+        .loading.show { display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #e2e8f0;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .result-area {
             display: none;
+            margin-top: 20px;
         }
 
-        .result.show { display: block; }
+        .result-area.show { display: block; }
 
-        .result h3 {
-            color: #333;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
+        .result-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
         }
 
-        .result-item {
+        .result-header {
+            padding: 15px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
+            justify-content: space-between;
+            align-items: center;
         }
+
+        .result-title {
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .result-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-success { background: #dcfce7; color: #166534; }
+        .status-error { background: #fee2e2; color: #991b1b; }
+
+        .result-body {
+            padding: 20px;
+        }
+
+        .result-row {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .result-row:last-child { border-bottom: none; }
 
         .result-label {
-            font-weight: 600;
-            color: #555;
-            min-width: 120px;
-            margin-right: 10px;
+            font-weight: 500;
+            color: #64748b;
+            min-width: 150px;
+            font-size: 0.9rem;
         }
 
         .result-value {
-            color: #333;
+            color: #1e293b;
             flex: 1;
             word-break: break-word;
+            font-size: 0.95rem;
         }
 
-        .error {
-            background: #fee;
-            border-left-color: #e74c3c;
-            color: #c0392b;
+        .result-value.code {
+            font-family: monospace;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .error-message.show { display: block; }
+
+        .api-info {
+            margin-top: 25px;
+            padding: 15px;
+            background: #eff6ff;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+            font-size: 0.85rem;
+            color: #1e40af;
         }
 
         .api-url {
+            font-family: monospace;
             font-size: 0.8rem;
-            color: #888;
-            margin-top: 5px;
-            word-break: break-all;
-            background: #f5f5f5;
+            background: #f8fafc;
             padding: 8px;
             border-radius: 4px;
+            margin-top: 8px;
+            word-break: break-all;
+            color: #475569;
         }
 
-        @media (max-width: 480px) {
+        .token-storage {
+            margin-top: 10px;
+            padding: 10px;
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #92400e;
+        }
+
+        .token-storage label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 400;
+        }
+
+        .token-storage input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
             .container { padding: 20px; }
-            h1 { font-size: 1.3rem; }
+            .btn-group { flex-direction: column; }
+            .result-row { flex-direction: column; gap: 5px; }
+            .result-label { min-width: auto; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>🔍 ค้นหาข้อมูลที่อยู่</h1>
-        <p class="subtitle">ระบบ API กระทรวงสาธารณสุข</p>
+        <header>
+            <h1>🔍 ค้นหาข้อมูลที่อยู่</h1>
+            <p class="subtitle">ระบบ API กระทรวงสาธารณสุข (Smart Health Service)</p>
+            <span class="badge">🔐 JWT Authentication</span>
+        </header>
 
         <!-- ฟอร์มกรอกข้อมูล -->
         <form id="searchForm">
-            <div class="form-group">
-                <label for="cid">เลขบัตรประชาชน (13 หลัก)</label>
-                <input 
-                    type="text" 
-                    id="cid" 
-                    name="cid" 
-                    placeholder="เช่น 5301200002910" 
-                    maxlength="13"
-                    pattern="[0-9]{13}"
-                    required
-                >
+            
+            <!-- ส่วนที่ 1: ข้อมูลการยืนยันตัวตน -->
+            <div class="form-section">
+                <div class="form-section-title">🔑 ข้อมูลการยืนยันตัวตน</div>
+                
+                <div class="form-group">
+                    <label for="jwtToken">JWT Token <span class="required">*</span></label>
+                    <input 
+                        type="password" 
+                        id="jwtToken" 
+                        name="jwtToken" 
+                        placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+                        required
+                    >
+                    <div class="input-hint">กรอก Token ที่ได้รับจากระบบ (รูปแบบ: Bearer Token)</div>
+                    
+                    <div class="token-storage">
+                        <label>
+                            <input type="checkbox" id="saveToken" checked>
+                            บันทึก Token ในเครื่องนี้ (LocalStorage)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" id="toggleToken">👁️ แสดง/ซ่อน Token</button>
+                    <button type="button" class="btn btn-secondary" id="clearToken">🗑️ ล้าง Token</button>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label for="addresstype">ประเภทที่อยู่</label>
-                <select id="addresstype" name="addresstype" required>
-                    <option value="">-- เลือกประเภท --</option>
-                    <option value="1">ที่อยู่ตามทะเบียนบ้าน</option>
-                    <option value="2">ที่อยู่ปัจจุบัน</option>
-                    <option value="3">ที่อยู่ติดต่อ</option>
-                    <option value="4">อื่นๆ</option>
-                </select>
+            <!-- ส่วนที่ 2: ข้อมูลสำหรับค้นหา -->
+            <div class="form-section">
+                <div class="form-section-title">📋 ข้อมูลสำหรับค้นหา</div>
+                
+                <div class="form-group">
+                    <label for="cid">เลขบัตรประชาชน (13 หลัก) <span class="required">*</span></label>
+                    <input 
+                        type="text" 
+                        id="cid" 
+                        name="cid" 
+                        placeholder="เช่น 5301200002910" 
+                        maxlength="13"
+                        pattern="[0-9]{13}"
+                        required
+                        autocomplete="off"
+                    >
+                    <div class="input-hint">ต้องเป็นตัวเลข 13 หลักเท่านั้น</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="addresstype">ประเภทที่อยู่ <span class="required">*</span></label>
+                    <select id="addresstype" name="addresstype" required>
+                        <option value="">-- เลือกประเภทที่อยู่ --</option>
+                        <option value="1">🏠 ที่อยู่ตามทะเบียนบ้าน</option>
+                        <option value="2" selected>📍 ที่อยู่ปัจจุบัน</option>
+                        <option value="3">📬 ที่อยู่สำหรับติดต่อ</option>
+                        <option value="4">🏢 ที่อยู่ที่ทำงาน</option>
+                        <option value="9">📄 อื่นๆ</option>
+                    </select>
+                </div>
             </div>
 
-            <button type="submit" class="btn" id="submitBtn">🔎 ค้นหาข้อมูล</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                <span id="btnText">🔎 ค้นหาข้อมูล</span>
+            </button>
         </form>
 
-        <!-- ส่วนแสดงสถานะโหลด -->
-        <div class="loading" id="loading">
-            ⏳ กำลังเรียกข้อมูลจาก API...
+        <!-- ส่วนแสดงสถานะ -->
+        <div class="status-area">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <span>กำลังเรียกข้อมูลจาก API...</span>
+            </div>
+
+            <div class="error-message" id="errorMessage"></div>
         </div>
 
         <!-- ส่วนแสดงผล -->
-        <div class="result" id="result">
-            <h3>📋 ผลลัพธ์</h3>
-            <div id="resultContent"></div>
+        <div class="result-area" id="resultArea">
+            <div class="result-card">
+                <div class="result-header">
+                    <span class="result-title">📋 ผลลัพธ์จากการค้นหา</span>
+                    <span class="result-status" id="resultStatus">Success</span>
+                </div>
+                <div class="result-body" id="resultContent">
+                    <!-- ผลลัพธ์จะถูกแสดงที่นี่ -->
+                </div>
+            </div>
         </div>
 
-        <!-- แสดง URL ที่เรียก (สำหรับดีบัก) -->
-        <div class="api-url" id="apiUrl"></div>
+        <!-- ข้อมูล API -->
+        <div class="api-info">
+            <strong>🔗 API Endpoint:</strong>
+            <div class="api-url" id="apiUrlDisplay">-</div>
+            <div style="margin-top: 10px;">
+                <strong>Headers ที่ส่ง:</strong><br>
+                <code style="font-size: 0.75rem;">Authorization: Bearer &lt;your_token&gt;</code><br>
+                <code style="font-size: 0.75rem;">Content-Type: application/json</code>
+            </div>
+        </div>
     </div>
 
     <script>
-        // === ตั้งค่า API Endpoint ===
-        const API_BASE_URL = 'https://smarthealth-service.moph.go.th/phps/api/address/v1/find_by_cid_and_addresstype';
+        // === 📦 Configuration ===
+        const CONFIG = {
+            API_BASE_URL: 'https://smarthealth-service.moph.go.th/phps/api/address/v1/find_by_cid_and_addresstype',
+            STORAGE_KEY: 'moph_api_jwt_token'
+        };
 
-        // === ฟังก์ชันเรียก API ===
-        async function fetchAddressData(cid, addressType) {
-            // สร้าง URL พร้อมพารามิเตอร์
-            const url = `${API_BASE_URL}?cid=${encodeURIComponent(cid)}&addresstype=${encodeURIComponent(addressType)}`;
+        // === 🎯 DOM Elements ===
+        const elements = {
+            form: document.getElementById('searchForm'),
+            jwtToken: document.getElementById('jwtToken'),
+            cid: document.getElementById('cid'),
+            addressType: document.getElementById('addresstype'),
+            submitBtn: document.getElementById('submitBtn'),
+            btnText: document.getElementById('btnText'),
+            loading: document.getElementById('loading'),
+            errorMessage: document.getElementById('errorMessage'),
+            resultArea: document.getElementById('resultArea'),
+            resultContent: document.getElementById('resultContent'),
+            resultStatus: document.getElementById('resultStatus'),
+            apiUrlDisplay: document.getElementById('apiUrlDisplay'),
+            toggleToken: document.getElementById('toggleToken'),
+            clearToken: document.getElementById('clearToken'),
+            saveToken: document.getElementById('saveToken')
+        };
+
+        // === 🔄 Initialize ===
+        document.addEventListener('DOMContentLoaded', () => {
+            // โหลด Token ที่บันทึกไว้ (ถ้ามี)
+            const savedToken = localStorage.getItem(CONFIG.STORAGE_KEY);
+            if (savedToken) {
+                elements.jwtToken.value = savedToken;
+                console.log('✅ Loaded saved JWT token');
+            }
+        });
+
+        // === 🔐 Token Management Functions ===
+        function toggleTokenVisibility() {
+            const input = elements.jwtToken;
+            if (input.type === 'password') {
+                input.type = 'text';
+                elements.toggleToken.textContent = '🙈 ซ่อน Token';
+            } else {
+                input.type = 'password';
+                elements.toggleToken.textContent = '👁️ แสดง Token';
+            }
+        }
+
+        function clearToken() {
+            elements.jwtToken.value = '';
+            localStorage.removeItem(CONFIG.STORAGE_KEY);
+            elements.jwtToken.focus();
+            showToast('✅ ล้าง Token เรียบร้อยแล้ว');
+        }
+
+        function saveTokenIfNeeded(token) {
+            if (elements.saveToken.checked && token) {
+                localStorage.setItem(CONFIG.STORAGE_KEY, token);
+                console.log('💾 Saved token to localStorage');
+            }
+        }
+
+        // === 🌐 API Call Function ===
+        async function callAddressAPI(cid, addressType, jwtToken) {
+            // สร้าง URL พร้อม Query Parameters
+            const params = new URLSearchParams({
+                cid: cid,
+                addresstype: addressType
+            });
             
+            const url = `${CONFIG.API_BASE_URL}?${params.toString()}`;
+            
+            // แสดง URL สำหรับดีบัก
+            elements.apiUrlDisplay.textContent = url;
+
             try {
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                        // หาก API ต้องการ Token สามารถเพิ่มได้ตรงนี้
-                        // 'Authorization': 'Bearer YOUR_TOKEN'
-                    }
+                        'Content-Type': 'application/json',
+                        // ✅ ส่ง JWT Token ใน Header
+                        'Authorization': `Bearer ${jwtToken}`
+                    },
+                    // เพิ่ม timeout 30 วินาที
+                    signal: AbortSignal.timeout(30000)
                 });
 
-                // ตรวจสอบสถานะ HTTP
-                if (!response.ok) {
-                    throw new Error(`HTTP Error! Status: ${response.status}`);
+                // อ่าน response เป็น text ก่อนเพื่อตรวจสอบ
+                const responseText = await response.text();
+                
+                // พยายามแปลงเป็น JSON
+                let data;
+                try {
+                    data = responseText ? JSON.parse(responseText) : { message: 'No content' };
+                } catch (e) {
+                    data = { rawResponse: responseText };
                 }
 
-                const data = await response.json();
-                return { success: true, data: data };
+                return {
+                    success: response.ok,
+                    status: response.status,
+                    statusText: response.statusText,
+                    data: data,
+                    headers: Object.fromEntries(response.headers.entries())
+                };
 
             } catch (error) {
-                console.error('API Error:', error);
-                return { 
-                    success: false, 
-                    error: error.message 
-                };
+                console.error('🔥 API Call Error:', error);
+                
+                // จัดการกับ error ประเภทต่างๆ
+                if (error.name === 'TimeoutError') {
+                    throw new Error('⏰ การเชื่อมต่อหมดเวลา (30 วินาที)');
+                }
+                if (error.name === 'AbortError') {
+                    throw new Error('🚫 การเชื่อมต่อถูกยกเลิก');
+                }
+                if (error.message.includes('Failed to fetch')) {
+                    throw new Error('🌐 ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ (ตรวจสอบ CORS หรือเครือข่าย)');
+                }
+                
+                throw error;
             }
         }
 
-        // === ฟังก์ชันแสดงผลแบบอ่านง่าย ===
-        function displayResult(data, isError = false) {
-            const resultDiv = document.getElementById('result');
-            const resultContent = document.getElementById('resultContent');
+        // === 🎨 Display Functions ===
+        function showLoading(show) {
+            elements.loading.classList.toggle('show', show);
+            elements.submitBtn.disabled = show;
+            elements.btnText.textContent = show ? '⏳ กำลังประมวลผล...' : '🔎 ค้นหาข้อมูล';
+        }
+
+        function showError(message) {
+            elements.errorMessage.textContent = message;
+            elements.errorMessage.classList.add('show');
+        }
+
+        function hideError() {
+            elements.errorMessage.classList.remove('show');
+        }
+
+        function showResult(result) {
+            elements.resultArea.classList.add('show');
+            elements.resultStatus.textContent = result.success ? '✅ Success' : `❌ Error ${result.status}`;
+            elements.resultStatus.className = `result-status ${result.success ? 'status-success' : 'status-error'}`;
             
-            resultDiv.classList.add('show');
-            
-            if (isError) {
-                resultDiv.classList.add('error');
-                resultContent.innerHTML = `<p><strong>❌ เกิดข้อผิดพลาด:</strong> ${data}</p>`;
-                return;
+            // แสดงผลลัพธ์แบบจัดรูปแบบ
+            elements.resultContent.innerHTML = formatResultData(result.data, result.success);
+        }
+
+        function formatResultData(data, isSuccess) {
+            if (!isSuccess) {
+                return `
+                    <div class="result-row">
+                        <span class="result-label">สถานะ:</span>
+                        <span class="result-value" style="color: var(--danger);">❌ ไม่สำเร็จ</span>
+                    </div>
+                    <div class="result-row">
+                        <span class="result-label">รายละเอียด:</span>
+                        <span class="result-value code">${JSON.stringify(data, null, 2)}</span>
+                    </div>
+                `;
             }
 
-            resultDiv.classList.remove('error');
-            
-            // ถ้าข้อมูลเป็น Object ให้แสดงแบบจัดรูปแบบ
+            // ถ้าข้อมูลเป็น object ให้แสดงแบบตาราง
             if (typeof data === 'object' && data !== null) {
                 let html = '';
                 
-                // ฟังก์ชันแสดงข้อมูลแบบวนลูป
-                function renderObject(obj, prefix = '') {
+                function renderFields(obj, prefix = '') {
                     for (const [key, value] of Object.entries(obj)) {
-                        const label = prefix ? `${prefix}.${key}` : key;
-                        
-                        if (typeof value === 'object' && value !== null) {
-                            // ถ้าเป็น object ซ้อน ให้เรียกฟังก์ชันตัวเอง
-                            html += `<div class="result-item">
-                                <span class="result-label">${getThaiLabel(label)}</span>
-                                <span class="result-value">-</span>
-                            </div>`;
-                            renderObject(value, label);
+                        // ข้ามฟิลด์ที่ซับซ้อนเกินไป
+                        if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+                            html += `
+                                <div class="result-row" style="background: #f8fafc; font-weight: 600;">
+                                    <span class="result-label">📁 ${getThaiLabel(prefix + key)}</span>
+                                    <span class="result-value">[Object]</span>
+                                </div>
+                            `;
+                            renderFields(value, prefix + key + '.');
+                        } else if (Array.isArray(value)) {
+                            html += `
+                                <div class="result-row">
+                                    <span class="result-label">📋 ${getThaiLabel(prefix + key)}</span>
+                                    <span class="result-value code">${value.length} items</span>
+                                </div>
+                            `;
                         } else {
-                            html += `<div class="result-item">
-                                <span class="result-label">${getThaiLabel(label)}</span>
-                                <span class="result-value">${value !== null && value !== '' ? value : '-'}</span>
-                            </div>`;
+                            html += `
+                                <div class="result-row">
+                                    <span class="result-label">${getThaiLabel(prefix + key)}</span>
+                                    <span class="result-value">${formatValue(value)}</span>
+                                </div>
+                            `;
                         }
                     }
                 }
                 
-                renderObject(data);
-                resultContent.innerHTML = html || '<p>ไม่พบข้อมูล</p>';
+                renderFields(data);
+                return html || '<p class="result-value">📭 ไม่พบข้อมูล</p>';
                 
             } else {
-                // ถ้าข้อมูลเป็นข้อความธรรมดา
-                resultContent.innerHTML = `<pre style="white-space: pre-wrap; font-family: 'Sarabun', sans-serif;">${JSON.stringify(data, null, 2)}</pre>`;
+                // ข้อมูลแบบธรรมดา
+                return `
+                    <div class="result-row">
+                        <span class="result-label">ข้อมูล:</span>
+                        <span class="result-value code">${formatValue(data)}</span>
+                    </div>
+                `;
             }
         }
 
-        // === ฟังก์ชันแปลงชื่อฟิลด์เป็นภาษาไทย (ปรับแต่งได้ตามโครงสร้าง API จริง) ===
         function getThaiLabel(key) {
             const labels = {
-                'cid': 'เลขบัตรประชาชน',
-                'addresstype': 'ประเภทที่อยู่',
-                'address': 'ที่อยู่',
-                'province': 'จังหวัด',
-                'district': 'อำเภอ',
-                'subdistrict': 'ตำบล',
-                'zipcode': 'รหัสไปรษณีย์',
-                'house_no': 'เลขที่',
-                'moo': 'หมู่ที่',
-                'soi': 'ซอย',
-                'road': 'ถนน',
-                'full_address': 'ที่อยู่เต็ม'
+                'cid': '🆔 เลขบัตรประชาชน',
+                'addresstype': '🏷️ ประเภทที่อยู่',
+                'address': '📍 ที่อยู่',
+                'province': '🗺️ จังหวัด',
+                'province_code': 'รหัสจังหวัด',
+                'district': '🏘️ อำเภอ/เขต',
+                'district_code': 'รหัสอำเภอ',
+                'subdistrict': '🏡 ตำบล/แขวง',
+                'subdistrict_code': 'รหัสตำบล',
+                'zipcode': '📮 รหัสไปรษณีย์',
+                'house_no': '🔢 เลขที่',
+                'moo': '🪧 หมู่ที่',
+                'soi': '🛤️ ซอย',
+                'road': '🛣️ ถนน',
+                'full_address': '📬 ที่อยู่เต็ม',
+                'status': '✅ สถานะ',
+                'message': '💬 ข้อความ',
+                'timestamp': '🕐 เวลา',
+                'code': '🔖 รหัส'
             };
-            return labels[key] || key;
+            return labels[key] || `📄 ${key}`;
         }
 
-        // === จัดการเหตุการณ์เมื่อส่งฟอร์ม ===
-        document.getElementById('searchForm').addEventListener('submit', async function(e) {
-            e.preventDefault(); // ป้องกันการรีเฟรชหน้า
+        function formatValue(value) {
+            if (value === null || value === undefined || value === '') return '<span style="color: #94a3b8;">-</span>';
+            if (typeof value === 'boolean') return value ? '✅ ใช่' : '❌ ไม่';
+            if (typeof value === 'number') return value.toLocaleString('th-TH');
+            if (typeof value === 'string') {
+                // ถ้าเป็นวันที่แบบ ISO ให้จัดรูปแบบ
+                if (/^\d{4}-\d{2}-\d{2}/.test(value)) {
+                    return new Date(value).toLocaleString('th-TH', { 
+                        year: 'numeric', month: 'long', day: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                    });
+                }
+                return value;
+            }
+            return String(value);
+        }
+
+        function showToast(message, duration = 3000) {
+            // สร้าง toast ชั่วคราว
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #1e293b;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 0.9rem;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // === 🎮 Event Handlers ===
+        elements.toggleToken.addEventListener('click', toggleTokenVisibility);
+        elements.clearToken.addEventListener('click', clearToken);
+
+        // Validate CID input (เฉพาะตัวเลข)
+        elements.cid.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 13);
+        });
+
+        // Form Submit Handler
+        elements.form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideError();
+            elements.resultArea.classList.remove('show');
 
             // ดึงค่าจากฟอร์ม
-            const cid = document.getElementById('cid').value.trim();
-            const addressType = document.getElementById('addresstype').value;
-            const submitBtn = document.getElementById('submitBtn');
-            const loading = document.getElementById('loading');
-            const result = document.getElementById('result');
-            const apiUrlDisplay = document.getElementById('apiUrl');
+            const jwtToken = elements.jwtToken.value.trim();
+            const cid = elements.cid.value.trim();
+            const addressType = elements.addressType.value;
 
-            // ตรวจสอบข้อมูลเบื้องต้น
+            // Validation
+            if (!jwtToken) {
+                showError('⚠️ กรุณากรอก JWT Token');
+                elements.jwtToken.focus();
+                return;
+            }
             if (!/^\d{13}$/.test(cid)) {
-                alert('⚠️ กรุณากรอกเลขบัตรประชาชน 13 หลัก');
+                showError('⚠️ เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก');
+                elements.cid.focus();
                 return;
             }
             if (!addressType) {
-                alert('⚠️ กรุณาเลือกประเภทที่อยู่');
+                showError('⚠️ กรุณาเลือกประเภทที่อยู่');
+                elements.addressType.focus();
                 return;
             }
 
+            // บันทึก Token ถ้าผู้ใช้เลือก
+            saveTokenIfNeeded(jwtToken);
+
             // แสดงสถานะโหลด
-            submitBtn.disabled = true;
-            loading.classList.add('show');
-            result.classList.remove('show');
-            
-            // แสดง URL ที่กำลังเรียก (สำหรับดีบัก)
-            apiUrlDisplay.textContent = `🔗 ${API_BASE_URL}?cid=${cid}&addresstype=${addressType}`;
+            showLoading(true);
 
             try {
                 // เรียก API
-                const response = await fetchAddressData(cid, addressType);
-
-                if (response.success) {
-                    displayResult(response.data);
+                const result = await callAddressAPI(cid, addressType, jwtToken);
+                
+                // แสดงผลลัพธ์
+                showResult(result);
+                
+                if (!result.success) {
+                    let errorMsg = `❌ API Error: ${result.status} ${result.statusText}`;
+                    if (result.status === 401) {
+                        errorMsg = '🔐 ไม่ผ่านการยืนยันตัวตน (401 Unauthorized)<br>ตรวจสอบ JWT Token ของคุณ';
+                    } else if (result.status === 403) {
+                        errorMsg = '🚫 ไม่ได้รับอนุญาต (403 Forbidden)<br>Token อาจไม่มีสิทธิ์เข้าถึงข้อมูลนี้';
+                    } else if (result.status === 404) {
+                        errorMsg = '🔍 ไม่พบข้อมูล (404 Not Found)<br>ตรวจสอบ CID และประเภทที่อยู่';
+                    } else if (result.status === 429) {
+                        errorMsg = '⏱️ เรียกบ่อยเกินไป (429 Too Many Requests)<br>กรุณารอสักครู่แล้วลองใหม่';
+                    }
+                    showError(errorMsg);
                 } else {
-                    displayResult(response.error, true);
+                    showToast('✅ ดึงข้อมูลสำเร็จ!');
                 }
-            } catch (err) {
-                displayResult('ไม่สามารถเชื่อมต่อกับ API ได้: ' + err.message, true);
+
+            } catch (error) {
+                console.error('Unhandled error:', error);
+                showError(`🚨 เกิดข้อผิดพลาด: ${error.message}`);
+                
+                // แนะนำวิธีแก้ไขสำหรับปัญหาที่พบบ่อย
+                if (error.message.includes('CORS')) {
+                    showError(`
+                        🌐 <strong>ปัญหา CORS Policy</strong><br><br>
+                        เบราว์เซอร์บล็อกการเรียก API จากต่างโดเมน วิธีแก้ไข:<br>
+                        1️⃣ ใช้ Proxy กลาง (สำหรับทดสอบ)<br>
+                        2️⃣ รันผ่าน Backend Server ของคุณ<br>
+                        3️⃣ ติดต่อทีม API เพื่อขอ whitelist โดเมน
+                    `);
+                }
             } finally {
-                // ซ่อนสถานะโหลด
-                submitBtn.disabled = false;
-                loading.classList.remove('show');
+                showLoading(false);
             }
         });
 
-        // === เพิ่มฟีเจอร์: กด Enter ในช่อง CID ให้ย้ายไปช่องถัดไป ===
-        document.getElementById('cid').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
+        // === 🎨 Add CSS Animations ===
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // === 🔧 Debug Helper (กด Ctrl+Shift+D เพื่อแสดงข้อมูลดีบัก) ===
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.shiftKey && e.key === 'D') {
                 e.preventDefault();
-                document.getElementById('addresstype').focus();
+                console.log('🔍 Debug Info:', {
+                    apiUrl: CONFIG.API_BASE_URL,
+                    tokenSaved: !!localStorage.getItem(CONFIG.STORAGE_KEY),
+                    userAgent: navigator.userAgent
+                });
+                showToast('🔧 ดู Console สำหรับข้อมูลดีบัก');
             }
         });
     </script>
