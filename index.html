@@ -3,239 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>พอร์ตโฟลิโอของฉัน</title>
+    <title>ค้นหาข้อมูลที่อยู่ - กระทรวงสาธารณสุข</title>
     
-    <!-- นำเข้าฟอนต์ภาษาไทยจาก Google Fonts -->
+    <!-- Google Fonts ภาษาไทย -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
-        /* ตั้งค่าพื้นฐาน */
-        :root {
-            --primary-color: #2563eb; /* สีหลัก (สีน้ำเงิน) */
-            --bg-color: #f8fafc;
-            --text-color: #1e293b;
-            --card-bg: #ffffff;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: 'Kanit', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-
-        /* ส่วนหัว (Header) */
-        header {
-            background-color: var(--card-bg);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            padding: 1rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        nav {
+            font-family: 'Sarabun', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
         }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            text-decoration: none;
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
         }
 
-        .nav-links a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 400;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-        }
-
-        /* ส่วนแนะนำตัว (Hero Section) */
-        .hero {
+        h1 {
             text-align: center;
-            padding: 80px 20px;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
+            color: #333;
             margin-bottom: 10px;
+            font-size: 1.5rem;
         }
 
-        .hero p {
-            font-size: 1.2rem;
-            color: #64748b;
-            margin-bottom: 30px;
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Sarabun', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
         }
 
         .btn {
-            display: inline-block;
-            background-color: var(--primary-color);
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 10px 25px;
-            border-radius: 5px;
-            text-decoration: none;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
             font-weight: 600;
-            transition: background 0.3s;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Sarabun', sans-serif;
         }
 
         .btn:hover {
-            background-color: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
 
-        /* ส่วนเนื้อหา (Sections) */
-        section {
-            padding: 60px 0;
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
         }
 
-        h2 {
+        .loading {
             text-align: center;
-            margin-bottom: 40px;
-            font-size: 2rem;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background: var(--card-bg);
             padding: 20px;
+            color: #666;
+            display: none;
+        }
+
+        .loading.show { display: block; }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            transition: transform 0.3s;
+            border-left: 4px solid #667eea;
+            display: none;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
+        .result.show { display: block; }
+
+        .result h3 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
         }
 
-        .card h3 {
+        .result-item {
+            display: flex;
             margin-bottom: 10px;
-            color: var(--primary-color);
+            font-size: 0.95rem;
         }
 
-        /* ส่วนท้าย (Footer) */
-        footer {
-            background-color: #1e293b;
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            margin-top: 40px;
+        .result-label {
+            font-weight: 600;
+            color: #555;
+            min-width: 120px;
+            margin-right: 10px;
         }
 
-        /* รองรับมือถือ */
-        @media (max-width: 600px) {
-            .hero h1 { font-size: 2rem; }
-            .nav-links { display: none; } /* ซ่อนเมนูบนมือถือเล็กๆ */
+        .result-value {
+            color: #333;
+            flex: 1;
+            word-break: break-word;
+        }
+
+        .error {
+            background: #fee;
+            border-left-color: #e74c3c;
+            color: #c0392b;
+        }
+
+        .api-url {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 5px;
+            word-break: break-all;
+            background: #f5f5f5;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 20px; }
+            h1 { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- เมนูด้านบน -->
-    <header>
-        <div class="container">
-            <nav>
-                <a href="#" class="logo">MyPortfolio</a>
-                <div class="nav-links">
-                    <a href="#about">เกี่ยวกับฉัน</a>
-                    <a href="#projects">ผลงาน</a>
-                    <a href="#contact">ติดต่อ</a>
-                </div>
-            </nav>
-        </div>
-    </header>
+    <div class="container">
+        <h1>🔍 ค้นหาข้อมูลที่อยู่</h1>
+        <p class="subtitle">ระบบ API กระทรวงสาธารณสุข</p>
 
-    <!-- ส่วนแนะนำตัว -->
-    <section class="hero">
-        <div class="container">
-            <h1>สวัสดีครับ, ผมชื่อ [ชื่อของคุณ]</h1>
-            <p>นักพัฒนาเว็บไซต์ | นักศึกษา | ผู้ชื่นชอบเทคโนโลยี</p>
-            <a href="#contact" class="btn">ติดต่อฉัน</a>
-        </div>
-    </section>
-
-    <!-- ส่วนเกี่ยวกับฉัน -->
-    <section id="about">
-        <div class="container">
-            <h2>เกี่ยวกับฉัน</h2>
-            <div class="card">
-                <p>
-                    เขียนแนะนำตัวเองสั้นๆ ตรงนี้ครับ เช่น ปัจจุบันกำลังศึกษาอยู่ชั้นปีที่เท่าไหร่ 
-                    มีความสนใจในด้านอะไรเป็นพิเศษ ชอบเขียนโปรแกรมภาษาอะไร 
-                    และเป้าหมายในอนาคตคืออะไร
-                </p>
+        <!-- ฟอร์มกรอกข้อมูล -->
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="cid">เลขบัตรประชาชน (13 หลัก)</label>
+                <input 
+                    type="text" 
+                    id="cid" 
+                    name="cid" 
+                    placeholder="เช่น 5301200002910" 
+                    maxlength="13"
+                    pattern="[0-9]{13}"
+                    required
+                >
             </div>
-        </div>
-    </section>
 
-    <!-- ส่วนผลงาน -->
-    <section id="projects">
-        <div class="container">
-            <h2>ผลงานของฉัน</h2>
-            <div class="grid">
-                <!-- โครงการที่ 1 -->
-                <div class="card">
-                    <h3>โครงการที่ 1</h3>
-                    <p>รายละเอียดสั้นๆ ของโครงการนี้ ทำอะไรได้บ้าง ใช้เทคโนโลยีอะไร</p>
-                </div>
-                <!-- โครงการที่ 2 -->
-                <div class="card">
-                    <h3>โครงการที่ 2</h3>
-                    <p>รายละเอียดสั้นๆ ของโครงการนี้ ทำอะไรได้บ้าง ใช้เทคโนโลยีอะไร</p>
-                </div>
-                <!-- โครงการที่ 3 -->
-                <div class="card">
-                    <h3>โครงการที่ 3</h3>
-                    <p>รายละเอียดสั้นๆ ของโครงการนี้ ทำอะไรได้บ้าง ใช้เทคโนโลยีอะไร</p>
-                </div>
+            <div class="form-group">
+                <label for="addresstype">ประเภทที่อยู่</label>
+                <select id="addresstype" name="addresstype" required>
+                    <option value="">-- เลือกประเภท --</option>
+                    <option value="1">ที่อยู่ตามทะเบียนบ้าน</option>
+                    <option value="2">ที่อยู่ปัจจุบัน</option>
+                    <option value="3">ที่อยู่ติดต่อ</option>
+                    <option value="4">อื่นๆ</option>
+                </select>
             </div>
-        </div>
-    </section>
 
-    <!-- ส่วนติดต่อ -->
-    <section id="contact">
-        <div class="container">
-            <h2>ติดต่อฉัน</h2>
-            <div style="text-align: center;">
-                <p>อีเมล: yourname@email.com</p>
-                <p>GitHub: <a href="https://github.com/yourusername" target="_blank">github.com/yourusername</a></p>
-                <p>Facebook: <a href="#">ลิงก์ Facebook</a></p>
-            </div>
-        </div>
-    </section>
+            <button type="submit" class="btn" id="submitBtn">🔎 ค้นหาข้อมูล</button>
+        </form>
 
-    <!-- ส่วนท้าย -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 [ชื่อของคุณ]. สร้างด้วย GitHub Pages</p>
+        <!-- ส่วนแสดงสถานะโหลด -->
+        <div class="loading" id="loading">
+            ⏳ กำลังเรียกข้อมูลจาก API...
         </div>
-    </footer>
 
+        <!-- ส่วนแสดงผล -->
+        <div class="result" id="result">
+            <h3>📋 ผลลัพธ์</h3>
+            <div id="resultContent"></div>
+        </div>
+
+        <!-- แสดง URL ที่เรียก (สำหรับดีบัก) -->
+        <div class="api-url" id="apiUrl"></div>
+    </div>
+
+    <script>
+        // === ตั้งค่า API Endpoint ===
+        const API_BASE_URL = 'https://smarthealth-service.moph.go.th/phps/api/address/v1/find_by_cid_and_addresstype';
+
+        // === ฟังก์ชันเรียก API ===
+        async function fetchAddressData(cid, addressType) {
+            // สร้าง URL พร้อมพารามิเตอร์
+            const url = `${API_BASE_URL}?cid=${encodeURIComponent(cid)}&addresstype=${encodeURIComponent(addressType)}`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                        // หาก API ต้องการ Token สามารถเพิ่มได้ตรงนี้
+                        // 'Authorization': 'Bearer YOUR_TOKEN'
+                    }
+                });
+
+                // ตรวจสอบสถานะ HTTP
+                if (!response.ok) {
+                    throw new Error(`HTTP Error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return { success: true, data: data };
+
+            } catch (error) {
+                console.error('API Error:', error);
+                return { 
+                    success: false, 
+                    error: error.message 
+                };
+            }
+        }
+
+        // === ฟังก์ชันแสดงผลแบบอ่านง่าย ===
+        function displayResult(data, isError = false) {
+            const resultDiv = document.getElementById('result');
+            const resultContent = document.getElementById('resultContent');
+            
+            resultDiv.classList.add('show');
+            
+            if (isError) {
+                resultDiv.classList.add('error');
+                resultContent.innerHTML = `<p><strong>❌ เกิดข้อผิดพลาด:</strong> ${data}</p>`;
+                return;
+            }
+
+            resultDiv.classList.remove('error');
+            
+            // ถ้าข้อมูลเป็น Object ให้แสดงแบบจัดรูปแบบ
+            if (typeof data === 'object' && data !== null) {
+                let html = '';
+                
+                // ฟังก์ชันแสดงข้อมูลแบบวนลูป
+                function renderObject(obj, prefix = '') {
+                    for (const [key, value] of Object.entries(obj)) {
+                        const label = prefix ? `${prefix}.${key}` : key;
+                        
+                        if (typeof value === 'object' && value !== null) {
+                            // ถ้าเป็น object ซ้อน ให้เรียกฟังก์ชันตัวเอง
+                            html += `<div class="result-item">
+                                <span class="result-label">${getThaiLabel(label)}</span>
+                                <span class="result-value">-</span>
+                            </div>`;
+                            renderObject(value, label);
+                        } else {
+                            html += `<div class="result-item">
+                                <span class="result-label">${getThaiLabel(label)}</span>
+                                <span class="result-value">${value !== null && value !== '' ? value : '-'}</span>
+                            </div>`;
+                        }
+                    }
+                }
+                
+                renderObject(data);
+                resultContent.innerHTML = html || '<p>ไม่พบข้อมูล</p>';
+                
+            } else {
+                // ถ้าข้อมูลเป็นข้อความธรรมดา
+                resultContent.innerHTML = `<pre style="white-space: pre-wrap; font-family: 'Sarabun', sans-serif;">${JSON.stringify(data, null, 2)}</pre>`;
+            }
+        }
+
+        // === ฟังก์ชันแปลงชื่อฟิลด์เป็นภาษาไทย (ปรับแต่งได้ตามโครงสร้าง API จริง) ===
+        function getThaiLabel(key) {
+            const labels = {
+                'cid': 'เลขบัตรประชาชน',
+                'addresstype': 'ประเภทที่อยู่',
+                'address': 'ที่อยู่',
+                'province': 'จังหวัด',
+                'district': 'อำเภอ',
+                'subdistrict': 'ตำบล',
+                'zipcode': 'รหัสไปรษณีย์',
+                'house_no': 'เลขที่',
+                'moo': 'หมู่ที่',
+                'soi': 'ซอย',
+                'road': 'ถนน',
+                'full_address': 'ที่อยู่เต็ม'
+            };
+            return labels[key] || key;
+        }
+
+        // === จัดการเหตุการณ์เมื่อส่งฟอร์ม ===
+        document.getElementById('searchForm').addEventListener('submit', async function(e) {
+            e.preventDefault(); // ป้องกันการรีเฟรชหน้า
+
+            // ดึงค่าจากฟอร์ม
+            const cid = document.getElementById('cid').value.trim();
+            const addressType = document.getElementById('addresstype').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            const apiUrlDisplay = document.getElementById('apiUrl');
+
+            // ตรวจสอบข้อมูลเบื้องต้น
+            if (!/^\d{13}$/.test(cid)) {
+                alert('⚠️ กรุณากรอกเลขบัตรประชาชน 13 หลัก');
+                return;
+            }
+            if (!addressType) {
+                alert('⚠️ กรุณาเลือกประเภทที่อยู่');
+                return;
+            }
+
+            // แสดงสถานะโหลด
+            submitBtn.disabled = true;
+            loading.classList.add('show');
+            result.classList.remove('show');
+            
+            // แสดง URL ที่กำลังเรียก (สำหรับดีบัก)
+            apiUrlDisplay.textContent = `🔗 ${API_BASE_URL}?cid=${cid}&addresstype=${addressType}`;
+
+            try {
+                // เรียก API
+                const response = await fetchAddressData(cid, addressType);
+
+                if (response.success) {
+                    displayResult(response.data);
+                } else {
+                    displayResult(response.error, true);
+                }
+            } catch (err) {
+                displayResult('ไม่สามารถเชื่อมต่อกับ API ได้: ' + err.message, true);
+            } finally {
+                // ซ่อนสถานะโหลด
+                submitBtn.disabled = false;
+                loading.classList.remove('show');
+            }
+        });
+
+        // === เพิ่มฟีเจอร์: กด Enter ในช่อง CID ให้ย้ายไปช่องถัดไป ===
+        document.getElementById('cid').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('addresstype').focus();
+            }
+        });
+    </script>
 </body>
 </html>
